@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nebula Glass Library</title>
+    <style>
+        /* --- RESET & BACKGROUND --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 20%, #2c1a4d 0%, #0f1026 50%, #070814 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            padding-bottom: 50px;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glass background glows */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(102, 192, 244, 0.15);
+            filter: blur(80px);
+            z-index: -1;
+        }
+        body::before { top: 10%; left: 10%; background: rgba(138, 43, 226, 0.2); }
+        body::after { bottom: 20%; right: 10%; background: rgba(0, 229, 255, 0.15); }
+
+        /* --- LIQUID GLASS STRUCTURAL CLASS --- */
+        .liquid-glass {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- TOP BAR --- */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            background: rgba(15, 16, 38, 0.4);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(45deg, #fff, #a3a3a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 18px;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            width: 260px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar:focus {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- CONTENT MAIN LAYOUT (LEFT ALIGNED) --- */
+        main {
+            max-width: 100%;
+            margin: 40px 0 0 5%;
+            padding-right: 5%;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            margin-bottom: 25px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* --- AUTOMATED GRID --- */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 260px));
+            gap: 30px;
+        }
+
+        .game-card {
+            border-radius: 16px;
+            padding: 12px;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .poster-container {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .poster-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .game-details {
+            padding: 14px 6px 4px 6px;
+        }
+
+        .game-details h3 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-details p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- DETAILS PAGE SCREEN --- */
+        .details-view {
+            display: none;
+            gap: 40px;
+            max-width: 1100px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .details-poster {
+            width: 300px;
+            aspect-ratio: 2 / 3;
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .details-poster img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .details-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .back-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            width: fit-content;
+            margin-bottom: 20px;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .details-content h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .details-content .meta {
+            font-size: 14px;
+            color: #66c0f4;
+            margin-bottom: 20px;
+        }
+
+        .details-content p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #28a745 0%, #218838 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 30px;
+            cursor: pointer;
+            width: fit-content;
+            text-decoration: none;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo" onclick="showLibrary()">NEBULA</div>
+        <input type="text" class="search-bar" placeholder="Search library...">
+    </header>
+
+    <main>
+        <div id="library-panel">
+            <h2 class="section-title">Jump Back In</h2>
+            <div class="games-grid" id="main-games-grid">
+                </div>
+        </div>
+
+        <div id="details-panel" class="details-view">
+            <div class="details-poster">
+                <img id="display-poster" src="" alt="Game Poster">
+            </div>
+            <div class="details-content">
+                <button class="back-btn" onclick="showLibrary()">← Back to Store</button>
+                <h1 id="display-title">Game Title</h1>
+                <div class="meta" id="display-meta">Platform Info</div>
+                <p id="display-desc">Description text...</p>
+                <a href="#" id="display-link" target="_blank" class="download-btn">Download Game</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ==========================================
+        //  ADD OR REMOVE YOUR GAMES HERE
+        // ==========================================
+        const myGamesCollection = [
+            {
+                title: "Red Dead Redemption",
+                developer: "Rockstar San Diego",
+                desc: "America, 1911. The Wild West era is coming to an end. When federal agents threaten his family, former outlaw John Marston is sent across the American frontier to help bring the law to the west.",
+                posterUrl: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Red_Dead_Redemption.jpg/250px-Red_Dead_Redemption.jpg",
+                downloadUrl: "https://example.com/download-rdr"
+            },
+            {
+                title: "Grand Theft Auto V",
+                developer: "Rockstar North",
+                desc: "When a young street hustler, a retired bank robber, and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the underworld, they must pull off a series of dangerous heists to survive.",
+                posterUrl: "https://www.xtrafondos.com/thumbs/vertical/1_3228.jpg",
+                downloadUrl: "https://example.com/download-gtav"
+            }
+            // 💡 To add a 3rd game, just put a comma above and paste a new block like this:
+            // {
+            //     title: "Game Name",
+            //     developer: "Studio Name",
+            //     desc: "Game plot summary...",
+            //     posterUrl: "Link to image",
+            //     downloadUrl: "Link to download"
+            // }
+        ];
+
+        // ==========================================
+        //  ENGINE CODE (DO NOT NEED TO TOUCH THIS)
+        // ==========================================
+        function generateGameGrid() {
+            const gridContainer = document.getElementById('main-games-grid');
+            gridContainer.innerHTML = ''; // Clear existing structure
+
+            myGamesCollection.forEach((game, index) => {
+                const cardHTML = `
+                    <div class="game-card liquid-glass" onclick="openDetails(${index})">
+                        <div class="poster-container">
+                            <img src="${game.posterUrl}" alt="${game.title}">
+                        </div>
+                        <div class="game-details">
+                            <h3>${game.title}</h3>
+                            <p>${game.developer}</p>
+                        </div>
+                    </div>
+                `;
+                gridContainer.innerHTML += cardHTML;
+            });
+        }
+
+        function openDetails(arrayIndex) {
+            const targetGame = myGamesCollection[arrayIndex];
+            
+            // Map dynamic content into details pane
+            document.getElementById('display-title').innerText = targetGame.title;
+            document.getElementById('display-meta').innerText = `Developer: ${targetGame.developer} | Platform: Windows`;
+            document.getElementById('display-desc').innerText = targetGame.desc;
+            document.getElementById('display-poster').src = targetGame.posterUrl;
+            document.getElementById('display-link').href = targetGame.downloadUrl;
+            
+            // Handle views shifting
+            document.getElementById('library-panel').style.display = 'none';
+            document.getElementById('details-panel').style.display = 'flex';
+        }
+
+        function showLibrary() {
+            document.getElementById('details-panel').style.display = 'none';
+            document.getElementById('library-panel').style.display = 'block';
+        }
+
+        // Initialize grid on boot up
+        window.onload = generateGameGrid;
+    </script>
+</body>
+</html>
