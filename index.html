@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nebula Rip</title>
     <style>
-        /* --- RESET & BACKGROUND --- */
         * {
             margin: 0;
             padding: 0;
@@ -21,7 +20,6 @@
             overflow-x: hidden;
         }
 
-        /* Ambient glass background glows */
         body::before, body::after {
             content: '';
             position: absolute;
@@ -35,7 +33,6 @@
         body::before { top: 10%; left: 10%; background: rgba(138, 43, 226, 0.2); }
         body::after { bottom: 20%; right: 10%; background: rgba(0, 229, 255, 0.15); }
 
-        /* --- LIQUID GLASS STRUCTURAL CLASS --- */
         .liquid-glass {
             background: rgba(255, 255, 255, 0.06);
             backdrop-filter: blur(20px);
@@ -44,7 +41,6 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        /* --- TOP BAR --- */
         header {
             position: sticky;
             top: 0;
@@ -86,7 +82,6 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
-        /* --- CONTENT MAIN LAYOUT (LEFT ALIGNED) --- */
         main {
             max-width: 100%;
             margin: 40px 0 0 5%;
@@ -101,7 +96,6 @@
             color: rgba(255, 255, 255, 0.9);
         }
 
-        /* --- AUTOMATED GRID --- */
         .games-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(240px, 260px));
@@ -153,7 +147,6 @@
             color: rgba(255, 255, 255, 0.5);
         }
 
-        /* --- DETAILS PAGE SCREEN --- */
         .details-view {
             display: none;
             gap: 40px;
@@ -249,15 +242,14 @@
 <body>
 
     <header>
-        <div class="logo" onclick="showLibrary()">Nebula Rip Windows</div>
+        <div class="logo" onclick="showLibrary()">NEBULA RIP</div>
         <input type="text" class="search-bar" placeholder="Search library...">
     </header>
 
     <main>
         <div id="library-panel">
-            <h2 class="section-title">Find A Game</h2>
-            <div class="games-grid" id="main-games-grid">
-                </div>
+            <h2 class="section-title"></h2>
+            <div class="games-grid" id="main-games-grid"></div>
         </div>
 
         <div id="details-panel" class="details-view">
@@ -275,9 +267,6 @@
     </main>
 
     <script>
-        // ==========================================
-        //  ADD OR REMOVE YOUR GAMES HERE
-        // ==========================================
         const myGamesCollection = [
             {
                 title: "Red Dead Redemption",
@@ -292,23 +281,12 @@
                 desc: "When a young street hustler, a retired bank robber, and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the underworld, they must pull off a series of dangerous heists to survive.",
                 posterUrl: "https://www.xtrafondos.com/thumbs/vertical/1_3228.jpg",
                 downloadUrl: "https://example.com/download-gtav"
-            {
-                    // 💡 To add a 3rd game, just put a comma above and paste a new block like this:
-            // {
-            //     title: "Game Name",
-            //     developer: "Studio Name",
-            //     desc: "Game plot summary...",
-            //     posterUrl: "Link to image",
-            //     downloadUrl: "Link to download"
-            // }
+            }
         ];
 
-        // ==========================================
-        //  ENGINE CODE (DO NOT NEED TO TOUCH THIS)
-        // ==========================================
         function generateGameGrid() {
             const gridContainer = document.getElementById('main-games-grid');
-            gridContainer.innerHTML = ''; // Clear existing structure
+            gridContainer.innerHTML = '';
 
             myGamesCollection.forEach((game, index) => {
                 const cardHTML = `
@@ -329,14 +307,12 @@
         function openDetails(arrayIndex) {
             const targetGame = myGamesCollection[arrayIndex];
             
-            // Map dynamic content into details pane
             document.getElementById('display-title').innerText = targetGame.title;
             document.getElementById('display-meta').innerText = `Developer: ${targetGame.developer} | Platform: Windows`;
             document.getElementById('display-desc').innerText = targetGame.desc;
             document.getElementById('display-poster').src = targetGame.posterUrl;
             document.getElementById('display-link').href = targetGame.downloadUrl;
             
-            // Handle views shifting
             document.getElementById('library-panel').style.display = 'none';
             document.getElementById('details-panel').style.display = 'flex';
         }
@@ -346,7 +322,6 @@
             document.getElementById('library-panel').style.display = 'block';
         }
 
-        // Initialize grid on boot up
         window.onload = generateGameGrid;
     </script>
 </body>
