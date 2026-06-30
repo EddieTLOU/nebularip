@@ -107,6 +107,7 @@
             padding: 12px;
             cursor: pointer;
             transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s;
+            position: relative;
         }
 
         .game-card:hover {
@@ -127,6 +128,25 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+
+        .coming-soon-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(235, 94, 40, 0.25);
+            border: 1px solid rgba(235, 94, 40, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #ff9f43;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 2;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
 
         .game-details {
@@ -233,6 +253,15 @@
             box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
         }
 
+        .download-btn.disabled {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: none;
+            box-shadow: none;
+            cursor: default;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -248,7 +277,7 @@
 
     <main>
         <div id="library-panel">
-            <h2 class="section-title"></h2>
+            <h2 class="section-title">Jump Back In</h2>
             <div class="games-grid" id="main-games-grid"></div>
         </div>
 
@@ -269,25 +298,36 @@
     <script>
         const myGamesCollection = [
             {
-                title: "Red Dead Redemption",
-                developer: "2010",
-                desc: "America, 1911. The Wild West era is coming to an end. When federal agents threaten his family, former outlaw John Marston is sent across the American frontier to help bring the law to the west.",
-                posterUrl: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Red_Dead_Redemption.jpg/250px-Red_Dead_Redemption.jpg",
-                downloadUrl: "https://example.com/download-rdr" 
+               title: "Grand Theft Auto VI",
+                releaseYear: "2025",
+                comingSoon: true,
+                desc: "Grand Theft Auto VI heads to the state of Leonida, home to the neon-soaked streets of Vice City and beyond in the biggest, most immersive evolution of the Grand Theft Auto series yet.",
+                posterUrl: "https://m.media-amazon.com/images/I/81K5GDW5X+L.jpg",
+                downloadUrl: ""
+            },
+            {
+                title: "Grand Theft Auto V",
+                releaseYear: "2013",
+                comingSoon: false,
+                desc: "When a young street hustler, a retired bank robber, and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the underworld, they must pull off a series of dangerous heists to survive.",
+                posterUrl: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a5/Grand_Theft_Auto_V.png/250px-Grand_Theft_Auto_V.png",
+                downloadUrl: "https://example.com/download-gtav"
             },
             {
                 title: "Riders Republic",
-                developer: "2021",
-                desc: "Riders Republic is a 2021 sports video game developed by Ubisoft Annecy and published by Ubisoft.",
+                releaseYear: "2021",
+                comingSoon: false,
+                desc: "Riders Republic is a 2021 sports video game developed by Ubisoft Annecy and published by Ubisoft",
                 posterUrl: "https://m.media-amazon.com/images/M/MV5BNWE4YTVlM2EtZTlmNy00YjIyLTgzYmYtMGVjOTc0YmYzMDI2XkEyXkFqcGc@._V1_.jpg",
                 downloadUrl: "https://example.com/download-gtav"
             },
             {
-                title: "Grand Theft Auto V",
-                developer: "2013",
-                desc: "When a young street hustler, a retired bank robber, and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the underworld, they must pull off a series of dangerous heists to survive.",
-                posterUrl: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a5/Grand_Theft_Auto_V.png/250px-Grand_Theft_Auto_V.png",
-                downloadUrl: "https://example.com/download-gtav"
+                title: "Red Dead Redemption",
+                releaseYear: "2010",
+                comingSoon: false,
+                desc: "America, 1911. The Wild West era is coming to an end. When federal agents threaten his family, former outlaw John Marston is sent across the American frontier to help bring the law to the west.",
+                posterUrl: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Red_Dead_Redemption.jpg/250px-Red_Dead_Redemption.jpg",
+                downloadUrl: "https://example.com/download-rdr"
             }
         ];
 
@@ -296,14 +336,17 @@
             gridContainer.innerHTML = '';
 
             myGamesCollection.forEach((game, index) => {
+                const badgeHTML = game.comingSoon ? `<div class="coming-soon-badge">Coming Soon</div>` : '';
+                
                 const cardHTML = `
                     <div class="game-card liquid-glass" onclick="openDetails(${index})">
+                        ${badgeHTML}
                         <div class="poster-container">
                             <img src="${game.posterUrl}" alt="${game.title}">
                         </div>
                         <div class="game-details">
                             <h3>${game.title}</h3>
-                            <p>${game.developer}</p>
+                            <p>Released: ${game.releaseYear}</p>
                         </div>
                     </div>
                 `;
@@ -315,10 +358,20 @@
             const targetGame = myGamesCollection[arrayIndex];
             
             document.getElementById('display-title').innerText = targetGame.title;
-            document.getElementById('display-meta').innerText = `Developer: ${targetGame.developer} | Platform: Windows`;
+            document.getElementById('display-meta').innerText = `Release Year: ${targetGame.releaseYear} | Platform: Windows`;
             document.getElementById('display-desc').innerText = targetGame.desc;
             document.getElementById('display-poster').src = targetGame.posterUrl;
-            document.getElementById('display-link').href = targetGame.downloadUrl;
+            
+            const actionBtn = document.getElementById('display-link');
+            if (targetGame.comingSoon) {
+                actionBtn.href = "#";
+                actionBtn.innerText = "Coming Soon";
+                actionBtn.classList.add('disabled');
+            } else {
+                actionBtn.href = targetGame.downloadUrl;
+                actionBtn.innerText = "Download Game";
+                actionBtn.classList.remove('disabled');
+            }
             
             document.getElementById('library-panel').style.display = 'none';
             document.getElementById('details-panel').style.display = 'flex';
